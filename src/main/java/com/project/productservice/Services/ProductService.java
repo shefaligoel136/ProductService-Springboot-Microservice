@@ -1,12 +1,21 @@
 package com.project.productservice.Services;
 
-import com.project.productservice.Models.ProductModel;
+import com.project.productservice.Exception.ProductNotExistException;
+import com.project.productservice.Models.Product;
 
 import java.util.List;
 
 public interface ProductService {
-    ProductModel getSingleProduct(Long id);
+    Product getSingleProduct(Long id) throws ProductNotExistException;
 
-    List<ProductModel> getAllProducts();
+    List<Product> getAllProducts();
+
+    Product addProduct(Product product);
+
+    Product updateProduct(Long id, Product product);
+
+    Product replaceProduct(Long id, Product product);
+
+    void deleteProduct(Long id);
 
 }
