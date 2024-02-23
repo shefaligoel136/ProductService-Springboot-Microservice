@@ -5,9 +5,10 @@ import com.project.productservice.Exception.ProductNotExistException;
 import com.project.productservice.Models.Category;
 import com.project.productservice.Models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +49,10 @@ public class FakeStoreProductService implements ProductService {
 
     @Override
     public List<Product> getAllProducts() {
+        System.out.println("get all products");
         List<Product> products = new ArrayList<>();
         FakeStoreProductDTO[] fakeStoreResponse = restTemplate.getForObject("https://fakestoreapi.com/products/", FakeStoreProductDTO[].class);
+        System.out.println(fakeStoreResponse);
         for (FakeStoreProductDTO response : fakeStoreResponse) {
             products.add(convertFakeStoreProductServiceToProduct(response));
         }
@@ -89,8 +92,10 @@ public class FakeStoreProductService implements ProductService {
     @Override
     public Product replaceProduct(Long id, Product product) {
         try {
-            restTemplate.delete("https://fakestoreapi.com/products/" + id);
-            return null;
+            RequestCallback requestCallback = restTemplate.httpEntityCallback(new FakeStoreProductDTO(), FakeStoreProductDTO.class);
+            HttpMessageConverterExtractor<FakeStoreProductDTO> responseExtractor = new HttpMessageConverterExtractor<>(FakeStoreProductDTO.class, restTemplate.getMessageConverters());
+            FakeStoreProductDTO response = restTemplate.execute("https://fakestoreapi.com/products/" + id, HttpMethod.PUT, requestCallback, responseExtractor, new Object[]{});
+            return convertFakeStoreProductServiceToProduct(response);
         } catch (Exception e) {
             throw new RestClientException("Error replacing");
         }

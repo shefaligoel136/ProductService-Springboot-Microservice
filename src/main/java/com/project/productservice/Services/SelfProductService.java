@@ -1,6 +1,7 @@
 package com.project.productservice.Services;
 
 import com.project.productservice.Exception.ProductNotExistException;
+import com.project.productservice.Models.Category;
 import com.project.productservice.Models.Product;
 import com.project.productservice.Repositories.CategoryRepository;
 import com.project.productservice.Repositories.ProductRepository;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service("selfProductService")
 //@Primary
@@ -25,7 +27,11 @@ public class SelfProductService implements ProductService {
 
     @Override
     public Product getSingleProduct(Long id) throws ProductNotExistException {
-        return null;
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isEmpty()) {
+            throw new ProductNotExistException("Product with id " + id + " does not exist's");
+        }
+        return productOptional.get();
     }
 
     @Override
@@ -35,7 +41,22 @@ public class SelfProductService implements ProductService {
 
     @Override
     public Product addProduct(Product product) {
-        return null;
+        Category category = product.getCategory();
+        System.out.println(category);
+        if (category.getId() == null) {
+            Category savedCategory = categoryRepository.save(category);
+            product.setCategory(savedCategory);
+        } else {
+            Optional<Category> optionalCategory = categoryRepository.findById(category.getId());
+            if (optionalCategory.isEmpty()) {
+                Category savedCategory = categoryRepository.save(category);
+                product.setCategory(savedCategory);
+            } else {
+                product.setCategory(optionalCategory.get());
+            }
+        }
+
+        return productRepository.save(product);
     }
 
     @Override
