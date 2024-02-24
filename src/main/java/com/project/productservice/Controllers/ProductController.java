@@ -28,26 +28,27 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProduct(@RequestHeader("AuthorizationToken") String authorizationToken) {
+    public ResponseEntity<List<Product>> getAllProduct() {
+        //@RequestHeader("AuthorizationToken") String authorizationToken
 
-        UserDTO userDTO = authenticationCommons.validateToken(authorizationToken);
-
-        if (userDTO == null) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        boolean isAdmin = false;
-
-        for (RoleDTO roleDTO : userDTO.getRoles()) {
-            if (roleDTO.getName().equals("ADMIN")) {
-                isAdmin = true;
-                break;
-            }
-        }
-
-        if (!isAdmin) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+//        UserDTO userDTO = authenticationCommons.validateToken(authorizationToken);
+//
+//        if (userDTO == null) {
+//            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+//        }
+//
+//        boolean isAdmin = false;
+//
+//        for (RoleDTO roleDTO : userDTO.getRoles()) {
+//            if (roleDTO.getName().equals("ADMIN")) {
+//                isAdmin = true;
+//                break;
+//            }
+//        }
+//
+//        if (!isAdmin) {
+//            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+//        }
 
         ResponseEntity<List<Product>> response = new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
         System.out.println("geg" + response);
